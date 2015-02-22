@@ -112,7 +112,7 @@ trimmedPredictionData &lt;- untrimmedPredictionData[,!nearEmptyCols]</code></pre
 <pre class="r"><code># partition the training data into training and test sets
 # the training set will be used to build the model, the test
 # set will be used to estimate out of sample error
-inTrain  = createDataPartition(trimmedTrainingData$classe, p = 0.01)[[1]]
+inTrain  = createDataPartition(trimmedTrainingData$classe, p = 0.30)[[1]]
 training = trimmedTrainingData[inTrain, ]
 testing  = trimmedTrainingData[-inTrain, ]</code></pre>
 </div>
@@ -123,33 +123,33 @@ testing  = trimmedTrainingData[-inTrain, ]</code></pre>
 set.seed(0)
 
 Sys.time() # time before building model</code></pre>
-<pre><code>## [1] &quot;2015-02-22 01:02:57 PST&quot;</code></pre>
+<pre><code>## [1] &quot;2015-02-22 01:06:31 PST&quot;</code></pre>
 <pre class="r"><code># fit the training data using random forest algorithm to generate fit model
 modFit &lt;- train(classe~ .,data=training,method=&quot;rf&quot;,prox=TRUE, ntrees=100)</code></pre>
 <pre><code>## Loading required package: randomForest
 ## randomForest 4.6-10
 ## Type rfNews() to see new features/changes/bug fixes.</code></pre>
 <pre class="r"><code>Sys.time() # time after building model</code></pre>
-<pre><code>## [1] &quot;2015-02-22 01:03:25 PST&quot;</code></pre>
+<pre><code>## [1] &quot;2015-02-22 02:04:48 PST&quot;</code></pre>
 <pre class="r"><code># print(modFit$finalModel)
 modFit</code></pre>
 <pre><code>## Random Forest 
 ## 
-## 199 samples
-##  52 predictor
-##   5 classes: 'A', 'B', 'C', 'D', 'E' 
+## 5889 samples
+##   52 predictor
+##    5 classes: 'A', 'B', 'C', 'D', 'E' 
 ## 
 ## No pre-processing
 ## Resampling: Bootstrapped (25 reps) 
 ## 
-## Summary of sample sizes: 199, 199, 199, 199, 199, 199, ... 
+## Summary of sample sizes: 5889, 5889, 5889, 5889, 5889, 5889, ... 
 ## 
 ## Resampling results across tuning parameters:
 ## 
-##   mtry  Accuracy   Kappa      Accuracy SD  Kappa SD  
-##    2    0.5939594  0.4821631  0.06623570   0.08086172
-##   27    0.6171373  0.5154408  0.05435049   0.06816585
-##   52    0.6062856  0.5018160  0.05992261   0.07473229
+##   mtry  Accuracy   Kappa      Accuracy SD  Kappa SD   
+##    2    0.9696493  0.9615747  0.003355066  0.004248027
+##   27    0.9704570  0.9626000  0.002515061  0.003192532
+##   52    0.9610250  0.9506640  0.004897465  0.006171069
 ## 
 ## Accuracy was used to select the optimal model using  the largest value.
 ## The final value used for the model was mtry = 27.</code></pre>
@@ -166,33 +166,33 @@ confusionMatrix(testingPredict, testing$classe)</code></pre>
 ## 
 ##           Reference
 ## Prediction    A    B    C    D    E
-##          A 4682  549  139  217  131
-##          B  200 2135  166  193   86
-##          C  153  606 2567  407  275
-##          D  405  283  515 2269  260
-##          E   84  186    0   97 2818
+##          A 3884   67    0    0    0
+##          B   11 2562   36    0    9
+##          C    9   26 2352   66   15
+##          D    0    2    6 2181    8
+##          E    2    0    1    4 2492
 ## 
 ## Overall Statistics
 ##                                           
-##                Accuracy : 0.745           
-##                  95% CI : (0.7389, 0.7512)
+##                Accuracy : 0.9809          
+##                  95% CI : (0.9785, 0.9831)
 ##     No Information Rate : 0.2844          
 ##     P-Value [Acc &gt; NIR] : &lt; 2.2e-16       
 ##                                           
-##                   Kappa : 0.6777          
-##  Mcnemar's Test P-Value : &lt; 2.2e-16       
+##                   Kappa : 0.9759          
+##  Mcnemar's Test P-Value : NA              
 ## 
 ## Statistics by Class:
 ## 
 ##                      Class: A Class: B Class: C Class: D Class: E
-## Sensitivity            0.8476   0.5680   0.7579   0.7128   0.7894
-## Specificity            0.9255   0.9588   0.9101   0.9099   0.9768
-## Pos Pred Value         0.8188   0.7680   0.6405   0.6080   0.8848
-## Neg Pred Value         0.9386   0.9024   0.9468   0.9418   0.9537
+## Sensitivity            0.9944   0.9642   0.9820   0.9689   0.9873
+## Specificity            0.9932   0.9949   0.9898   0.9986   0.9994
+## Pos Pred Value         0.9830   0.9786   0.9530   0.9927   0.9972
+## Neg Pred Value         0.9978   0.9915   0.9962   0.9939   0.9972
 ## Prevalence             0.2844   0.1935   0.1744   0.1639   0.1838
-## Detection Rate         0.2411   0.1099   0.1322   0.1168   0.1451
-## Detection Prevalence   0.2944   0.1431   0.2064   0.1921   0.1640
-## Balanced Accuracy      0.8865   0.7634   0.8340   0.8114   0.8831</code></pre>
+## Detection Rate         0.2828   0.1866   0.1713   0.1588   0.1815
+## Detection Prevalence   0.2877   0.1906   0.1797   0.1600   0.1820
+## Balanced Accuracy      0.9938   0.9796   0.9859   0.9838   0.9933</code></pre>
 <pre class="r"><code># get accuracy from postResample and use it to compute the 
 # out of sample error
 postResampleStats &lt;- postResample(testingPredict, testing$classe)
@@ -202,13 +202,13 @@ oosError &lt;- 1 - accuracy</code></pre>
 <h3>accuracy</h3>
 <pre class="r"><code># accuracy:
 accuracy</code></pre>
-<pre><code>## [1] 0.7450445</code></pre>
+<pre><code>## [1] 0.9809219</code></pre>
 </div>
 <div id="out-of-sample-error" class="section level3">
 <h3>out of sample error</h3>
 <pre class="r"><code># out of sample error:
 oosError</code></pre>
-<pre><code>## [1] 0.2549555</code></pre>
+<pre><code>## [1] 0.01907813</code></pre>
 </div>
 </div>
 <div id="predictions" class="section level2">
